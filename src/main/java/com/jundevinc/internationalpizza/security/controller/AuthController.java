@@ -58,12 +58,11 @@ public class AuthController {
     }
 
     @PostMapping("/reg")
-    public ResponseEntity<?> register(@ModelAttribute RegForm regForm) {
+    public ResponseEntity<?> register(@RequestBody RegForm regForm) {
         if (userRepository.existsUserByUsername(regForm.getUsername()))
             return ResponseEntity.badRequest().body("This username is already taken! Choose another one!");
         User user = new User(regForm.getUsername(),
-                encoder.encode(regForm.getPassword()),
-                UploadFileUtil.getStoragePath(regForm.getFile().getOriginalFilename()));
+                encoder.encode(regForm.getPassword()));
         Set<Role> defaultRoles = new HashSet<>();
         defaultRoles.add(roleRepository.findRoleByUserRole(Roles.ROLE_USER));
         user.setUserRoles(defaultRoles);

@@ -30,19 +30,14 @@ public class User {
     @NotBlank
     private String password;
 
-    @Column
-    @NotBlank
-    private String avatar;
-
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinTable(name = "user_roles",
         joinColumns = @JoinColumn(name = "user_id"),
         inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> userRoles = new HashSet<>();
 
-    public User(@NotBlank String username, @NotBlank String password, @NotBlank String avatar) {
+    public User(@NotBlank String username, @NotBlank String password) {
         this.username = username;
         this.password = password;
-        this.avatar = avatar;
     }
 }

@@ -20,6 +20,4 @@ public class RegForm {
     @NotBlank
     private String password;
 
-    @NotNull
-    private MultipartFile file;
 }
