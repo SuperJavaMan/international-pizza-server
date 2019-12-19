@@ -1,5 +1,7 @@
 package com.jundevinc.internationalpizza.security.controller;
 
+import com.jundevinc.internationalpizza.api.model.Customer;
+import com.jundevinc.internationalpizza.api.repository.CustomerRepository;
 import com.jundevinc.internationalpizza.security.jwt.JwtTokenProvider;
 import com.jundevinc.internationalpizza.security.model.*;
 import com.jundevinc.internationalpizza.security.repository.RoleRepository;
@@ -32,18 +34,21 @@ public class AuthController {
     private RoleRepository roleRepository;
     private PasswordEncoder encoder;
     private JwtTokenProvider tokenProvider;
+    private CustomerRepository customerRepository;
 
     @Autowired
     public AuthController(AuthenticationManager authManager,
                           UserRepository userRepository,
                           RoleRepository roleRepository,
                           PasswordEncoder encoder,
-                          JwtTokenProvider provider) {
+                          JwtTokenProvider tokenProvider,
+                          CustomerRepository customerRepository) {
         this.authManager = authManager;
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.encoder = encoder;
-        this.tokenProvider = provider;
+        this.tokenProvider = tokenProvider;
+        this.customerRepository = customerRepository;
     }
 
     @PostMapping("/login")
@@ -67,6 +72,9 @@ public class AuthController {
         defaultRoles.add(roleRepository.findRoleByUserRole(Roles.ROLE_USER));
         user.setUserRoles(defaultRoles);
         userRepository.save(user);
+
+        Customer customer = new Customer(regForm.getUsername(), "Card number in AuthController");
+        customerRepository.save(customer);
         return ResponseEntity.ok().body("User registered successfully!");
     }
 }
