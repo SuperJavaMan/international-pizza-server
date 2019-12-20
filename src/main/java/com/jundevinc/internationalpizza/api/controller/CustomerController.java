@@ -8,14 +8,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-/**
- * @author Oleg Pavlyukov
- * on 19.12.2019
- * cpabox777@gmail.com
- */
+@CrossOrigin(maxAge = 3600)
 @RestController
 @RequestMapping("/api/customer")
 @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
@@ -30,6 +27,14 @@ public class CustomerController {
         this.customerRepository = customerRepository;
         this.userRepository = userRepository;
     }
+
+    @GetMapping("/carent")
+    public Customer getCarentCastomer(Principal principal){
+        return customerRepository.findByName(principal.getName()).get();
+    }
+
+
+
 
     @GetMapping("/{id}")
     public Customer getCustomer(@PathVariable Long id) {

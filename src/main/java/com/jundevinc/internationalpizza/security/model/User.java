@@ -8,11 +8,7 @@ import javax.validation.constraints.NotBlank;
 import java.util.HashSet;
 import java.util.Set;
 
-/**
- * @author Oleg Pavlyukov
- * on 03.12.2019
- * cpabox777@gmail.com
- */
+
 @Entity
 @Data
 @NoArgsConstructor
