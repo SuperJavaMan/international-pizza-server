@@ -10,11 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-/**
- * @author Oleg Pavlyukov
- * on 19.12.2019
- * cpabox777@gmail.com
- */
+@CrossOrigin(maxAge = 3600)
 @RestController
 @RequestMapping("api/order")
 @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
