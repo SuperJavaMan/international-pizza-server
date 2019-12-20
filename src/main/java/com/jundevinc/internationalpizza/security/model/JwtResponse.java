@@ -14,13 +14,13 @@ import java.util.Collection;
 @Data
 @NoArgsConstructor
 public class JwtResponse {
-    private String token;
-    private String type = "Bearer";
+    private String accessToken;
+    private String type = "Bearer ";
     private String username;
     private Collection<? extends GrantedAuthority> authorities;
 
-    public JwtResponse(String token, String username, Collection<? extends GrantedAuthority> authorities) {
-        this.token = token;
+    public JwtResponse(String accessToken, String username, Collection<? extends GrantedAuthority> authorities) {
+        this.accessToken = accessToken;
         this.username = username;
         this.authorities = authorities;
     }

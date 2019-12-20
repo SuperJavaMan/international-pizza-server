@@ -25,6 +25,7 @@ import java.util.Set;
  * on 03.12.2019
  * cpabox777@gmail.com
  */
+@CrossOrigin(origins = "http://localhost:4200")
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
