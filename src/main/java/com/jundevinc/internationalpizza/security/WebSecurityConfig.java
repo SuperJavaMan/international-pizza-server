@@ -54,7 +54,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http.csrf().disable()
                 .authorizeRequests()
                 .antMatchers("/auth/**").permitAll()
-                .antMatchers("/api/pizza").permitAll()
+                .antMatchers("/api/pizza/all").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .exceptionHandling().authenticationEntryPoint(entryPoint)
@@ -63,20 +63,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
         http.addFilterBefore(jwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
     }
-//    .and()
-//                .cors().configurationSource(
-//            request -> {
-//        CorsConfiguration cors = new CorsConfiguration();
-//        cors.setAllowedMethods(
-//                Arrays.asList(
-//                        HttpMethod.GET.name(),
-//                        HttpMethod.POST.name(),
-//                        HttpMethod.PUT.name(),
-//                        HttpMethod.DELETE.name()
-//                ));
-//        cors.applyPermitDefaultValues();
-//        return cors;
-//    })
 
     @Bean
     public JwtTokenFilter jwtTokenFilter() {
