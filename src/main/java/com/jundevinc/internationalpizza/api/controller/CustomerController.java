@@ -12,7 +12,7 @@ import java.security.Principal;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-@CrossOrigin(maxAge = 3600)
+@CrossOrigin(origins = "http://localhost:4200")
 @RestController
 @RequestMapping("/api/customer")
 @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")

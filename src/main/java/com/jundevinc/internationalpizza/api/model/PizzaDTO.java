@@ -1,26 +1,22 @@
 package com.jundevinc.internationalpizza.api.model;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-
-@Entity
+/**
+ * @author Oleg Pavlyukov
+ * on 22.12.2019
+ * cpabox777@gmail.com
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Pizza {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+public class PizzaDTO {
     private Long id;
     private String name;
     private String size;
     private int price;
-    private String icon;
+    private MultipartFile multipartFile;
 }
