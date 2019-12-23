@@ -27,8 +27,23 @@ public class IconStorageService {
             Files.copy(file.getInputStream(), ROOT_DIR.resolve(file.getOriginalFilename()));
             return true;
         } catch (IOException e) {
-            throw new RuntimeException("MultipartFile stream exception");
+            throw new RuntimeException("Icon saving error");
         }
+    }
+
+    public Resource getIcon(String filename) {
+        Path file = ROOT_DIR.resolve(filename);
+        try {
+            Resource resource = new UrlResource(file.toUri());
+            if (resource.exists() && resource.isReadable()) {
+                return resource;
+            } else {
+                throw new RuntimeException("Resource is not exist or readable");
+            }
+        } catch (MalformedURLException e) {
+            throw new RuntimeException("Resource creation ex. Msg: " + e.getMessage());
+        }
+
     }
 
     public boolean deleteIcon(String url) {

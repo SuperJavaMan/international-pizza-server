@@ -6,7 +6,7 @@ package com.jundevinc.internationalpizza.api.utils;
  * cpabox777@gmail.com
  */
 public class FileStorageUtils {
-    private static final String BASE_ICON_URL = "http://localhost:8080/pizza-icon/";
+    private static final String BASE_ICON_URL = "http://localhost:8080/api/pizza/icon/";
 
     public static String extractFileNameFromUrl(String url) {
         return url.replace(BASE_ICON_URL, "");
