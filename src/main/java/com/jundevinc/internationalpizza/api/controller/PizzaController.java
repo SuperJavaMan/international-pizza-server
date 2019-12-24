@@ -71,17 +71,28 @@ public class PizzaController {
     @PutMapping("/{id}")
     public Pizza updatePizza(@PathVariable Long id,
                              @ModelAttribute PizzaDTO pizzaDTO) {
-        Pizza pizzaUpdate = pizzaRepository.findById(id).orElseThrow(NoSuchElementException::new);
         MultipartFile icon = pizzaDTO.getMultipartFile();
+        Pizza pizzaUpdate = pizzaRepository.findById(id).orElseThrow(NoSuchElementException::new);
+        boolean isDeletedOk;
+        boolean isSavedOk;
 
-        boolean isDeletedOk = storageService.deleteIcon(pizzaUpdate.getIcon());
-        boolean isSavedOk = storageService.storeIcon(icon);
-        String iconUrl = FileStorageUtils.getUrlForIcon(icon.getOriginalFilename());
+        if (icon != null) {
+            if (pizzaUpdate.getIcon() != null) {
+                isDeletedOk = storageService.deleteIcon(pizzaUpdate.getIcon());
+            } else isDeletedOk = true;
+            isSavedOk = storageService.storeIcon(icon);
+            String iconUrl = FileStorageUtils.getUrlForIcon(icon.getOriginalFilename());
+
+            pizzaUpdate.setIcon(iconUrl);
+        } else {
+            isDeletedOk = true;
+            isSavedOk = true;
+        }
 
         pizzaUpdate.setName(pizzaDTO.getName());
         pizzaUpdate.setSize(pizzaDTO.getSize());
         pizzaUpdate.setPrice(pizzaDTO.getPrice());
-        pizzaUpdate.setIcon(iconUrl);
+
         if (isSavedOk && isDeletedOk) {
             return pizzaRepository.save(pizzaUpdate);
         } else {

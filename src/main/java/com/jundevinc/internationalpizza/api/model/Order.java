@@ -45,10 +45,6 @@ public class Order implements Serializable {
     )
     private List<Pizza> pizzaList = new ArrayList<>();
 
-//    @Column
-//    @Nullable
-//    private double totalPrice;
-
     public Order(Customer customer, @NotBlank String address, List<Pizza> pizzaList) {
         this.customer = customer;
         this.address = address;
