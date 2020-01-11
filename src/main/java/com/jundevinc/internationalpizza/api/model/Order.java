@@ -20,6 +20,7 @@ import java.util.List;
 @Entity
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "orders")
 public class Order implements Serializable {
 
@@ -49,5 +50,10 @@ public class Order implements Serializable {
         this.customer = customer;
         this.address = address;
         this.pizzaList = pizzaList;
+    }
+
+    public List<Pizza> addPizzaToList(Pizza pizza) {
+        this.pizzaList.add(pizza);
+        return this.pizzaList;
     }
 }

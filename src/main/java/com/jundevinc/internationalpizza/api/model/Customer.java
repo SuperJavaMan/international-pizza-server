@@ -34,9 +34,11 @@ public class Customer implements Serializable {
     private String cardNumber;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "customer",
-    cascade = CascadeType.ALL,
-    orphanRemoval = true)
+    @OneToMany(mappedBy = "customer"
+//            ,
+//    cascade = CascadeType.ALL,
+//    orphanRemoval = true
+    )
     private List<Order> orderList = new ArrayList<>();
 
     public Customer(@NotBlank String name, @NotBlank String cardNumber) {
