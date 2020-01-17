@@ -6,7 +6,7 @@ import com.jundevinc.internationalpizza.security.jwt.JwtTokenProvider;
 import com.jundevinc.internationalpizza.security.model.*;
 import com.jundevinc.internationalpizza.security.repository.RoleRepository;
 import com.jundevinc.internationalpizza.security.repository.UserRepository;
-import com.jundevinc.internationalpizza.security.service.UploadFileUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -28,6 +28,7 @@ import java.util.Set;
 @CrossOrigin(origins = "http://localhost:4200")
 @RestController
 @RequestMapping("/auth")
+@Slf4j
 public class AuthController {
 
     private AuthenticationManager authManager;
@@ -54,6 +55,9 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginForm loginForm) {
+        log.info("Method login invocation");
+        log.debug("Login with the name '" + loginForm.getUsername() + "' and password '" + loginForm.getPassword() + "'");
+
         Authentication authentication = authManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginForm.getUsername(), loginForm.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -65,8 +69,13 @@ public class AuthController {
 
     @PostMapping("/reg")
     public ResponseEntity<?> register(@RequestBody RegForm regForm) {
-        if (userRepository.existsUserByUsername(regForm.getUsername()))
+        log.info("Method reg invocation");
+        log.debug("Reg with the name '" + regForm.getUsername() + "' and password '" + regForm.getPassword() + "'");
+
+        if (userRepository.existsUserByUsername(regForm.getUsername())) {
+            log.debug("User with that name already exist");
             return ResponseEntity.badRequest().body("This username is already taken! Choose another one!");
+        }
         User user = new User(regForm.getUsername(),
                 encoder.encode(regForm.getPassword()));
         Set<Role> defaultRoles = new HashSet<>();
@@ -74,8 +83,8 @@ public class AuthController {
         user.setUserRoles(defaultRoles);
         userRepository.save(user);
 
-        Customer customer = new Customer(regForm.getUsername(), "Card number in AuthController");
+        Customer customer = new Customer(regForm.getUsername(), "Default card number");
         customerRepository.save(customer);
-        return ResponseEntity.ok().body("User registered successfully!");
+        return ResponseEntity.ok("User registered successfully!");
     }
 }

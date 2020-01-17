@@ -1,6 +1,7 @@
 package com.jundevinc.internationalpizza.security.jwt;
 
 import com.jundevinc.internationalpizza.security.service.UserDetailsServiceImpl;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -19,6 +20,7 @@ import java.io.IOException;
  * on 03.12.2019
  * cpabox777@gmail.com
  */
+@Slf4j
 public class JwtTokenFilter extends OncePerRequestFilter {
 
     @Autowired
@@ -30,31 +32,36 @@ public class JwtTokenFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest httpServletRequest,
                                     HttpServletResponse httpServletResponse,
                                     FilterChain filterChain) throws ServletException, IOException {
+        log.info("doFilterInternal() invoked");
         try {
         String jwtToken = getJwtToken(httpServletRequest);
         if (getJwtToken(httpServletRequest)!= null && provider.isJwtTokenValid(jwtToken)) {
+            log.debug("Extracted token is valid");
             String username = provider.getUsernameFromJwtToken(jwtToken);
             UserDetails userPrincipal = service.loadUserByUsername(username);
             UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                     userPrincipal, null, userPrincipal.getAuthorities()
             );
             authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(httpServletRequest));
+            log.debug("Set authentication to the security context");
             SecurityContextHolder.getContext().setAuthentication(authenticationToken);
         }
         } catch (Exception e) {
-            System.out.println("Can NOT set user authentication -> Message: {}" + e.getMessage());
             e.printStackTrace();
+            log.error("Can NOT set user authentication", e);
         }
         filterChain.doFilter(httpServletRequest, httpServletResponse);
     }
 
     private String getJwtToken(HttpServletRequest request) {
+        log.info("getJwtToken() invocation. Try to extract token from request's header");
         String authHeader = request.getHeader("Authorization");
 
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            log.debug("Authorization header is exists. Extract token.");
             return authHeader.replace("Bearer ", "");
         } else {
-//            throw new JwtException("Bad authHeader -> " + authHeader);
+            log.debug("Invalid Authorization header -> " + authHeader);
             return null;
         }
     }

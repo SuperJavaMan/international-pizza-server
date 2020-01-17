@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -21,6 +22,7 @@ import java.util.stream.Collectors;
 @Data
 @ToString
 @AllArgsConstructor
+@Slf4j
 public class UserPrincipal implements UserDetails {
 
     private long id;
@@ -30,6 +32,10 @@ public class UserPrincipal implements UserDetails {
     private Collection<? extends GrantedAuthority> authorities;
 
     public static UserPrincipal build(User user) {
+        log.info("build() invoked");
+        log.debug("Build an UserPrincipal from the User -> username='" + user.getUsername()
+                                                        + "' password='" + user.getPassword() + "'"
+                                                        + "; authorities=" + user.getUserRoles());
         List<GrantedAuthority> authorities = user.getUserRoles().stream().map(role ->
             new SimpleGrantedAuthority(role.getUserRole().name())
         ).collect(Collectors.toList());
@@ -77,6 +83,7 @@ public class UserPrincipal implements UserDetails {
 
     @Override
     public boolean equals(Object o) {
+        log.info("equals() invoked");
         if (this == o) return true;
         if (!(o instanceof UserPrincipal)) return false;
         UserPrincipal that = (UserPrincipal) o;

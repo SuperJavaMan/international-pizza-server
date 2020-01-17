@@ -6,6 +6,7 @@ import com.jundevinc.internationalpizza.api.model.Pizza;
 import com.jundevinc.internationalpizza.api.repository.CustomerRepository;
 import com.jundevinc.internationalpizza.api.repository.OrderRepository;
 import com.jundevinc.internationalpizza.api.repository.PizzaRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -19,6 +20,7 @@ import java.util.NoSuchElementException;
 @RestController
 @RequestMapping("api/order")
 @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+@Slf4j
 public class OrderController {
 
     private OrderRepository orderRepository;
@@ -36,23 +38,38 @@ public class OrderController {
 
     @GetMapping("/{id}")
     public Order getOrderById(@PathVariable Long id) {
-        return orderRepository.findById(id).orElseThrow(NoSuchElementException::new);
+        log.info("getOrderById() invoked");
+        log.debug("Order id -> " + id);
+
+        return orderRepository.findById(id).orElseThrow(() -> {
+                                                log.debug("Order with id -> " + id + " not found");
+                                                return new NoSuchElementException("Order with id -> " + id + " not found");
+                                            });
     }
 
     @GetMapping
     public List<Order> getAllCustomerOrders(Principal principal) {
+        log.info("getAllCustomerOrders() invoked");
+        log.debug("Principal name -> " + principal.getName());
+
         Customer customer = customerRepository.findByName(principal.getName())
-                .orElseThrow(NoSuchElementException::new);
+                                                .orElseThrow(NoSuchElementException::new);
         return customer.getOrderList();
     }
 
     @GetMapping("/all")
     public List<Order> getAllOrders() {
+        log.info("getAllOrders() invoked");
+
         return orderRepository.findAll();
     }
 
     @PostMapping
-    public Order addOrder(@RequestBody Order orderRequest, Principal principal) {
+    public Order addOrder(@RequestBody Order orderRequest,
+                                        Principal principal) {
+        log.info("addOrder() invoked");
+        log.debug("Request order -> " + orderRequest);
+
         Order order = new Order();
         Customer customer = customerRepository.findByName(principal.getName())
                                                 .orElseThrow(NoSuchElementException::new);
@@ -69,7 +86,13 @@ public class OrderController {
     @PutMapping("/{id}")
     public Order updateOrder(@PathVariable Long id,
                              @RequestBody Order requestOrder) {
-        Order order = orderRepository.findById(id).orElseThrow(NoSuchElementException::new);
+        log.info("updateOrder() invoked");
+        log.debug("Request order -> " + requestOrder);
+
+        Order order = orderRepository.findById(id).orElseThrow(() -> {
+                                                log.debug("Order with id -> " + id + " not found");
+                                                return new NoSuchElementException("Order with id -> " + id + " not found");
+                                            });
         order.setAddress(requestOrder.getAddress());
         order.setPizzaList(requestOrder.getPizzaList());
         return orderRepository.save(order);
@@ -79,12 +102,20 @@ public class OrderController {
     public Order addToOrder(@PathVariable Long order_id,
                                   @PathVariable Long pizza_id,
                                   Principal principal) {
+        log.info("addToOrder() invoked");
+        log.debug("Order id -> " + order_id + "; Pizza id -> " + pizza_id);
         Customer customer = customerRepository.findByName(principal.getName())
-                .orElseThrow(NoSuchElementException::new);
+                                                .orElseThrow(NoSuchElementException::new);
         Pizza pizza = pizzaRepository.findById(pizza_id)
-                .orElseThrow(NoSuchElementException::new);
+                                        .orElseThrow(() -> {
+                                            log.debug("Pizza with id = " + pizza_id + " did not exists");
+                                            return new NoSuchElementException("Pizza with id = " + pizza_id + " did not exists");
+                                        });
         Order order = orderRepository.findById(order_id)
-                .orElseThrow(NoSuchElementException::new);
+                                        .orElseThrow(() -> {
+                                            log.debug("Order with id -> " + order_id + " not found");
+                                            return new NoSuchElementException("Order with id -> " + order_id + " not found");
+                                        });
 
         order.addPizzaToList(pizza);
         Order savedOrder = orderRepository.save(order);
@@ -97,7 +128,12 @@ public class OrderController {
 
     @DeleteMapping("/{id}")
     public void deleteOrder(@PathVariable Long id) {
-        Order order = orderRepository.findById(id).orElseThrow(NoSuchElementException::new);
+        log.info("deleteOrder() invoked");
+        Order order = orderRepository.findById(id)
+                                        .orElseThrow(() -> {
+                                            log.debug("Order with id -> " + id + " not found");
+                                            return new NoSuchElementException("Order with id -> " + id + " not found");
+                                        });
         orderRepository.delete(order);
     }
 }
