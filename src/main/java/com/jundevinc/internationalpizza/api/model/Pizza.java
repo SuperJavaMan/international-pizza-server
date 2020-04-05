@@ -4,6 +4,7 @@ package com.jundevinc.internationalpizza.api.model;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -14,6 +15,7 @@ import javax.persistence.Id;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 public class Pizza {
 
     @Id
@@ -22,7 +24,5 @@ public class Pizza {
     private String name;
     private String size;
     private int price;
-
-
-
+    private String icon;
 }

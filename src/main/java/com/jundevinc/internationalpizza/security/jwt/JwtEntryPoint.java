@@ -1,5 +1,6 @@
 package com.jundevinc.internationalpizza.security.jwt;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
@@ -15,6 +16,7 @@ import java.io.IOException;
  * cpabox777@gmail.com
  */
 @Component
+@Slf4j
 public class JwtEntryPoint implements AuthenticationEntryPoint {
 
     @Override
@@ -22,6 +24,8 @@ public class JwtEntryPoint implements AuthenticationEntryPoint {
                          HttpServletResponse httpServletResponse,
                          AuthenticationException e) throws IOException, ServletException {
 
+        log.info("Invoke unauthorized entry point");
+        log.debug("Authorization header -> " + httpServletRequest.getHeader("Authorization"));
         httpServletResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Error -> Unauthorized");
     }
 }

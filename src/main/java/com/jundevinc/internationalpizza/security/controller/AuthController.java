@@ -1,10 +1,12 @@
 package com.jundevinc.internationalpizza.security.controller;
 
+import com.jundevinc.internationalpizza.api.model.Customer;
+import com.jundevinc.internationalpizza.api.repository.CustomerRepository;
 import com.jundevinc.internationalpizza.security.jwt.JwtTokenProvider;
 import com.jundevinc.internationalpizza.security.model.*;
 import com.jundevinc.internationalpizza.security.repository.RoleRepository;
 import com.jundevinc.internationalpizza.security.repository.UserRepository;
-import com.jundevinc.internationalpizza.security.service.UploadFileUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -23,8 +25,10 @@ import java.util.Set;
  * on 03.12.2019
  * cpabox777@gmail.com
  */
+@CrossOrigin(origins = "http://localhost:4200")
 @RestController
 @RequestMapping("/auth")
+@Slf4j
 public class AuthController {
 
     private AuthenticationManager authManager;
@@ -32,22 +36,28 @@ public class AuthController {
     private RoleRepository roleRepository;
     private PasswordEncoder encoder;
     private JwtTokenProvider tokenProvider;
+    private CustomerRepository customerRepository;
 
     @Autowired
     public AuthController(AuthenticationManager authManager,
                           UserRepository userRepository,
                           RoleRepository roleRepository,
                           PasswordEncoder encoder,
-                          JwtTokenProvider provider) {
+                          JwtTokenProvider tokenProvider,
+                          CustomerRepository customerRepository) {
         this.authManager = authManager;
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.encoder = encoder;
-        this.tokenProvider = provider;
+        this.tokenProvider = tokenProvider;
+        this.customerRepository = customerRepository;
     }
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginForm loginForm) {
+        log.info("Method login invocation");
+        log.debug("Login with the name '" + loginForm.getUsername() + "' and password '" + loginForm.getPassword() + "'");
+
         Authentication authentication = authManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginForm.getUsername(), loginForm.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -59,14 +69,22 @@ public class AuthController {
 
     @PostMapping("/reg")
     public ResponseEntity<?> register(@RequestBody RegForm regForm) {
-        if (userRepository.existsUserByUsername(regForm.getUsername()))
+        log.info("Method reg invocation");
+        log.debug("Reg with the name '" + regForm.getUsername() + "' and password '" + regForm.getPassword() + "'");
+
+        if (userRepository.existsUserByUsername(regForm.getUsername())) {
+            log.debug("User with that name already exist");
             return ResponseEntity.badRequest().body("This username is already taken! Choose another one!");
+        }
         User user = new User(regForm.getUsername(),
                 encoder.encode(regForm.getPassword()));
         Set<Role> defaultRoles = new HashSet<>();
         defaultRoles.add(roleRepository.findRoleByUserRole(Roles.ROLE_USER));
         user.setUserRoles(defaultRoles);
         userRepository.save(user);
-        return ResponseEntity.ok().body("User registered successfully!");
+
+        Customer customer = new Customer(regForm.getUsername(), "Default card number");
+        customerRepository.save(customer);
+        return ResponseEntity.ok("User registered successfully!");
     }
 }

@@ -1,0 +1,46 @@
+Configutation:
+  status: warn
+  name: pizza-log-config-yaml
+  Properties:
+    Property:
+      name: logs
+      value: logs
+  thresholdFilter:
+    level: debug
+  Appenders:
+    Console:
+      name: Console_Appender
+      target: SYSTEM_OUT
+      PatternLayout:
+        pattern: "[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} %c{1} - %msg%n"
+      Filters:
+        ThresholdFilter:
+          level: warn
+    RollingFile:
+      name: RollingFile_Appender
+      fileName: ${logs}/pizza-server.log
+      filePattern: logs/pizza-server-%d{yyyy-MM-dd}-%i.log
+      PatternLayout:
+        pattern: "[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} %c{1} - %msg%n"
+      Policies:
+        SizeBasedTriggeringPolicy:
+          size: 1 MB
+      DefaultRollOverStrategy:
+        max: 30
+      Filters:
+        ThresholdFilter:
+          level: error
+  Loggers:
+    Root:
+      level: debug
+      AppenderRef:
+        ref: Console_Appender
+    Logger:
+      name: com.jundevinc.internationalpizza
+      level: info
+      additivity: false
+      AppenderRef:
+        - ref: RollingFile_Appender
+          level: error
+        - ref: Console_Appender
+          level: info

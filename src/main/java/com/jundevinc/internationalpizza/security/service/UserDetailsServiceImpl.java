@@ -3,6 +3,7 @@ package com.jundevinc.internationalpizza.security.service;
 import com.jundevinc.internationalpizza.security.model.User;
 import com.jundevinc.internationalpizza.security.model.UserPrincipal;
 import com.jundevinc.internationalpizza.security.repository.UserRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -16,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
  * cpabox777@gmail.com
  */
 @Service
+@Slf4j
 public class UserDetailsServiceImpl implements UserDetailsService {
 
     private UserRepository repository;
@@ -27,9 +29,14 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Transactional
     @Override
-    public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
-        User user = repository.findUserByUsername(s)
-                                .orElseThrow(() -> new UsernameNotFoundException("User with name\"" + s + "\" not found"));
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        log.info("loadUserByUsername() invoked");
+        User user = repository.findUserByUsername(username)
+                                .orElseThrow(() -> {
+                                    log.debug("User not found with username -> " + username);
+                                    return new UsernameNotFoundException("User with name\"" + username + "\" not found");
+                                });
+        log.debug("User with username='" + username + "' is exists");
         return UserPrincipal.build(user);
     }
 }
